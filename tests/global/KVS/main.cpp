@@ -9,6 +9,8 @@
 #include "simgrid/s4u.hpp"
 
 #include <iostream>
+#include <vector>
+#include <string>
 
 XBT_LOG_NEW_CATEGORY(RSG_THRIFT_CLIENT, "Remote SimGrid");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(RSG_THRIFT_REMOTE_CLIENT, RSG_THRIFT_CLIENT , "RSG server (Remote SimGrid)");
@@ -45,7 +47,7 @@ int main(int argc, char **argv) {
   rsg::HostPtr host1 = rsg::Host::by_name("host1");
   //We first create a key and a value to be inserted in the KVS
   std::string key("hello");
-  std::string value("WORLD!");
+  std::string value("");
   // We insert it
   rsg::kvs::insert(key, value);
   // And then we create an actor, it will get the value and update it.
@@ -67,7 +69,17 @@ int main(int argc, char **argv) {
 
   //Remove it again ?
   rsg::kvs::remove(key);
+  std::string prekey("ip/");
+  std::vector<std::string> prematch = rsg::kvs::getprematch(prekey);
+  for(auto i = prematch.begin(); i != prematch.end(); i++) {
+    XBT_INFO("Prematch value for %s: %s", prekey.c_str(), i->c_str());
+  }
 
+  std::string emptyprekey("/nothing/");
+  prematch = rsg::kvs::getprematch(emptyprekey);
+  for(auto i = prematch.begin(); i != prematch.end(); i++) {
+    XBT_INFO("This should never appear");
+  }
 
   rsg::this_actor::quit();
   return 0;

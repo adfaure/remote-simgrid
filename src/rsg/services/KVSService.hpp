@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <mutex>
+#include <vector>
 #include <unordered_map>
 
 #include "RsgKVS.h"
@@ -34,6 +35,14 @@ namespace simgrid  {
       static shared_ptr<RsgKVSHandler> getInstance();
 
       void get(std::string& _return, const std::string& key);
+      
+      /** Retrieve a list of value based on a prematch pattern 
+        * It allows to create sub-key hierachi in your datal.
+        * For example: mykey/mysubkey
+        * Then you can use prematch to get all key with getprematch("mykey").
+        * There is no assumption about the delimiter you can use, so there are some valid examples.
+        */
+      void getprematch(std::vector<std::string> & _return, const std::string& prekey);
       void remove(const std::string& key);
       void replace(const std::string& key, const std::string& data);
       void insert(const std::string& key, const std::string& data);
@@ -47,7 +56,7 @@ namespace simgrid  {
       static shared_ptr<RsgKVSHandler> instance;
       std::mutex sync;
 
-      std::unordered_map<std::string, std::string> store;
+      std::map<std::string, std::string> store;
       RsgKVSHandler();
   };
 

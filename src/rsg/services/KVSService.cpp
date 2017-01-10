@@ -68,6 +68,18 @@ void rsg::RsgKVSHandler::get(std::string& _return, const std::string& key) {
   }
 }
 
+void rsg::RsgKVSHandler::getprematch(std::vector<std::string> & _return, const std::string& prekey) {
+  //Lower bound will get an iterator on the first key (or the end of the map).
+  auto it = this->store.lower_bound(prekey);
+  //The second part of the condition is a lambda function returning weither the current key starts with the prekey.
+  while(it != this->store.end() && [&]() -> bool {
+    return (it->first.compare(0, prekey.length(), prekey) == 0);
+  }()) {
+    _return.push_back(it->second);
+    ++it;
+  }
+}
+
 void rsg::RsgKVSHandler::remove(const std::string& key) {
   this->store.erase(key);
 }
